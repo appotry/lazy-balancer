@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^query/$', views.query_user),
     url(r'^status/$', views.change_status),
     url(r'^save/$', views.save),
+    url(r'^delete/$', views.delete),
 ]

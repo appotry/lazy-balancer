@@ -148,3 +148,35 @@ def save(request):
         status = 400
 
     return HttpResponse(json.dumps(content), status=status)
+
+@is_auth
+@is_admin
+def delete(request):
+    try:
+        post = json.loads(request.body.decode('utf-8'))
+        user_id = post.get('user_id')
+        
+        if not user_id:
+            content = {"flag": "Error", "context": "UserIdRequired"}
+            status = 400
+            return HttpResponse(json.dumps(content), status=status)
+        
+        user = User.objects.get(pk=user_id)
+        
+        if user.is_superuser:
+            content = {"flag": "Error", "context": "DeleteDeny"}
+            status = 403
+            return HttpResponse(json.dumps(content), status=status)
+        
+        user.delete()
+        content = {"flag": "Success"}
+        status = 200
+        
+    except User.DoesNotExist:
+        content = {"flag": "Error", "context": "UserNotFound"}
+        status = 404
+    except Exception as e:
+        content = {"flag": "Error", "context": str(e)}
+        status = 400
+    
+    return HttpResponse(json.dumps(content), status=status)

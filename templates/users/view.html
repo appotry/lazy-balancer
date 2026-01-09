@@ -315,5 +315,38 @@
         }
     }
 
+    function delete_user(pk) {
+        if (confirm("确认要删除该用户？")) {
+            var post = {
+                user_id: pk
+            }
+            jQuery.ajax({
+                type: 'post',
+                url: '/users/delete/',
+                data: JSON.stringify(post),
+                dataType: 'json',
+                success: function (p) {
+                    if (p.flag == "Success") {
+                        alert("删除成功!")
+                        top.location = '/users/'
+                    }
+                },
+                error: function (e) {
+                    if (e.status == 403 && e.responseJSON.flag == "Error" && e.responseJSON.context == "DeleteDeny") {
+                        alert('删除失败！禁止删除默认用户！')
+                        top.location = '/users/'
+                    } else if (e.status == 403) {
+                        alert('权限不足！')
+                        top.location = '/users/'
+                    } else if (e.status == 404 && e.responseJSON.flag == "Error" && e.responseJSON.context == "UserNotFound") {
+                        alert('删除失败！用户不存在！')
+                    } else {
+                        alert('删除错误！' + e.responseJSON.context)
+                    }
+                }
+            })
+        }
+    }
+
 </script>
 {% endblock %}
